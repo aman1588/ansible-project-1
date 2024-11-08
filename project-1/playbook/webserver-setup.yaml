@@ -1,0 +1,43 @@
+---
+- name: To deploy and automate a webserver
+  hosts: all
+  become: true
+
+  tasks:
+    - name: To update and upgrade apt packages
+      ansible.builtin.apt:
+        name: "*"
+        state: latest
+        update_cache: yes
+
+    - name: To install Nginx
+      ansible.builtin.apt:
+        name: nginx
+        state: latest
+        allow_downgrade: yes
+
+    - name: Start and enable nginx
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+
+    - name: Copying an index.html file from linux file system to host
+      copy:
+        src: /ansible/project-1/.vscode/Frontend/index.html
+        dest: /usr/share/nginx/html/index.html
+      notify: restart nginx
+
+    - name: Verifying if index.html is running or not
+      command: curl http://localhost
+      register: output
+
+    - name: Print the curl output
+      debug:
+        var: output.stdout
+
+  handlers:
+    - name: restart nginx
+      service:
+        name: nginx
+        state: restarted
