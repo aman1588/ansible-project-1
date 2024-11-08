@@ -27,6 +27,12 @@
         src: /ansible/project-1/.vscode/Frontend/index.html
         dest: /usr/share/nginx/html/index.html
       notify: restart nginx
+    
+    handlers:
+    - name: restart nginx
+      service:
+        name: nginx
+        state: restarted
 
     - name: Verifying if index.html is running or not
       command: curl http://localhost
@@ -36,8 +42,3 @@
       debug:
         var: output.stdout
 
-  handlers:
-    - name: restart nginx
-      service:
-        name: nginx
-        state: restarted
